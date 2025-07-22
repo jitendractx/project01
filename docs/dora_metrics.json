@@ -1,5 +1,28 @@
+from datetime import datetime
+import os
+import json
+import requests
 
-{
-  "deployment_frequency": 26,
-  "average_lead_time_hours": 0.0
+# ... (rest of your code remains the same)
+
+# --- Save with timestamp ---
+timestamp = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
+entry = {
+    "timestamp": timestamp,
+    "deployment_frequency": frequency,
+    "average_lead_time_hours": round(lead_time, 2)
 }
+
+# Load previous data if exists
+if os.path.exists("dora_metrics.json"):
+    with open("dora_metrics.json", "r") as f:
+        data = json.load(f)
+else:
+    data = []
+
+# Append new entry and save
+data.append(entry)
+with open("dora_metrics.json", "w") as f:
+    json.dump(data, f, indent=2)
+
+print("DORA Metrics Updated:", entry)
