@@ -61,7 +61,7 @@ result = {
     "average_lead_time_hours": round(lead_time, 2)
 }
 
-with open("dora_metrics.json", "w") as f:
+with open("docs/dora_metrics.json", "w") as f:
     json.dump(result, f, indent=2)
 
 print("✅ DORA Metrics Saved:", result)
