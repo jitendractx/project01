@@ -2,23 +2,48 @@
 <html>
 <head>
   <title>DORA Metrics</title>
-  <style>
-    body { font-family: sans-serif; max-width: 600px; margin: 2rem auto; }
-    pre { background: #f4f4f4; padding: 1rem; border-radius: 5px; }
-  </style>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-  <h1>DORA Metrics</h1>
-  <pre id="metrics">Loading...</pre>
-
+  <h2>DORA Metrics</h2>
+  <canvas id="doraChart" width="600" height="300"></canvas>
   <script>
     fetch('dora_metrics.json')
-      .then(res => res.json())
+      .then(response => response.json())
       .then(data => {
-        document.getElementById('metrics').textContent = JSON.stringify(data, null, 2);
+        if (!Array.isArray(data)) {
+          throw new Error("Invalid format: Expected array");
+        }
+
+        const labels = data.map(entry => new Date(entry.timestamp).toLocaleDateString());
+        const freq = data.map(entry => entry.deployment_frequency);
+        const lead = data.map(entry => entry.average_lead_time_hours);
+
+        const ctx = document.getElementById('doraChart').getContext('2d');
+        new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: labels,
+            datasets: [
+              {
+                label: 'Deployment Frequency',
+                data: freq,
+                borderColor: 'green',
+                fill: false
+              },
+              {
+                label: 'Lead Time (hrs)',
+                data: lead,
+                borderColor: 'blue',
+                fill: false
+              }
+            ]
+          }
+        });
       })
-      .catch(err => {
-        document.getElementById('metrics').textContent = 'Failed to load metrics.';
+      .catch(error => {
+        console.error("Failed to load metrics:", error);
+        document.body.innerHTML += "<p style='color:red;'>Failed to load metrics.</p>";
       });
   </script>
 </body>
