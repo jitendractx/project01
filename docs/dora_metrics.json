@@ -1,4 +1,7 @@
-{
-  "deployment_frequency": 87,
-  "average_lead_time_hours": 0.01
-}
+[
+  {
+    "timestamp": "2025-07-22T18:49:36.292425",
+    "deployment_frequency": 90,
+    "average_lead_time_hours": 0.01
+  }
+]
