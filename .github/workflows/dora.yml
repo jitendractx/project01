@@ -20,11 +20,11 @@ jobs:
 
       - name: Install dependencies
         run: pip install requests
-
+      
       - name: Run DORA metrics script
         env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}  # Only if your script uses it
-        run: python dora_metrics.py
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+        run: python docs/dora_metrics.py
 
       - name: Commit and push DORA metrics
         env:
