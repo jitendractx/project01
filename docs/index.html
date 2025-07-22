@@ -1,45 +1,25 @@
-<script>
-  fetch('dora_metrics.json')
-    .then(res => res.json())
-    .then(data => {
-      if (!Array.isArray(data)) throw new Error("Invalid format: not array");
+<!DOCTYPE html>
+<html>
+<head>
+  <title>DORA Metrics</title>
+  <style>
+    body { font-family: sans-serif; max-width: 600px; margin: 2rem auto; }
+    pre { background: #f4f4f4; padding: 1rem; border-radius: 5px; }
+  </style>
+</head>
+<body>
+  <h1>DORA Metrics</h1>
+  <pre id="metrics">Loading...</pre>
 
-      const labels = data.map(d => d.timestamp);
-      const freqData = data.map(d => d.deployment_frequency);
-      const leadData = data.map(d => d.average_lead_time_hours);
-
-      const ctx = document.getElementById('doraChart').getContext('2d');
-      new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels: labels,
-          datasets: [
-            {
-              label: 'Deployment Frequency',
-              data: freqData,
-              borderColor: 'blue',
-              fill: false
-            },
-            {
-              label: 'Lead Time (hrs)',
-              data: leadData,
-              borderColor: 'green',
-              fill: false
-            }
-          ]
-        },
-        options: {
-          responsive: true,
-          plugins: {
-            title: {
-              display: true,
-              text: 'DORA Metrics Over Time'
-            }
-          }
-        }
+  <script>
+    fetch('dora_metrics.json')
+      .then(res => res.json())
+      .then(data => {
+        document.getElementById('metrics').textContent = JSON.stringify(data, null, 2);
+      })
+      .catch(err => {
+        document.getElementById('metrics').textContent = 'Failed to load metrics.';
       });
-    })
-    .catch(err => {
-      document.getElementById('error').textContent = 'Failed to load metrics: ' + err.message;
-    });
-</script>
+  </script>
+</body>
+</html>
