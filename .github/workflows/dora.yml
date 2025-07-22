@@ -2,7 +2,7 @@ name: DORA Metrics
 
 on:
   schedule:
-    - cron: '0 0 * * 1'  # Every Monday at 00:00 UTC
+    - cron: '0 0 * * 1'  # Every Monday
   workflow_dispatch:
 
 jobs:
@@ -10,6 +10,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false  # 👈 Important!
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -19,15 +21,18 @@ jobs:
       - name: Install dependencies
         run: pip install requests
 
-      - name: Run DORA Metrics Script
+      - name: Run DORA metrics script
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}  # Only if your script uses it
+        run: python dora_metrics.py
+
+      - name: Commit and push DORA metrics
         env:
           GH_PAT: ${{ secrets.GH_PAT }}
-        run: python docs/dora_metrics.py
-
-      - name: Commit and Push DORA Metrics
         run: |
           git config user.name "jitendractx"
           git config user.email "jitendractx@users.noreply.github.com"
-          git add docs/dora_metrics.json
+          git remote set-url origin https://x-access-token:${GH_PAT}@github.com/jitendractx/project01.git
+          git add dora_metrics.json
           git commit -m "Update DORA metrics" || echo "No changes to commit"
           git push
