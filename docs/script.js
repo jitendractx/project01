@@ -1,4 +1,4 @@
-fetch('../dora_metrics.json')
+fetch('dora_metrics.json')
   .then(response => response.json())
   .then(data => {
     const ctx = document.getElementById('doraChart').getContext('2d');
@@ -21,4 +21,7 @@ fetch('../dora_metrics.json')
         }
       }
     });
+  })
+  .catch(err => {
+    console.error('Failed to load metrics:', err);
   });
