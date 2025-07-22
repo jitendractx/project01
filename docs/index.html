@@ -1,50 +1,93 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
   <title>DORA Metrics</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin-top: 40px;
+    }
+    canvas {
+      max-width: 800px;
+      margin: auto;
+    }
+  </style>
 </head>
 <body>
   <h2>DORA Metrics</h2>
-  <canvas id="doraChart" width="600" height="300"></canvas>
+  <canvas id="doraChart" width="800" height="400"></canvas>
+
   <script>
-    fetch('dora_metrics.json')
-      .then(response => response.json())
-      .then(data => {
-        if (!Array.isArray(data)) {
-          throw new Error("Invalid format: Expected array");
-        }
-
-        const labels = data.map(entry => new Date(entry.timestamp).toLocaleDateString());
-        const freq = data.map(entry => entry.deployment_frequency);
-        const lead = data.map(entry => entry.average_lead_time_hours);
-
-        const ctx = document.getElementById('doraChart').getContext('2d');
-        new Chart(ctx, {
-          type: 'line',
-          data: {
-            labels: labels,
-            datasets: [
-              {
-                label: 'Deployment Frequency',
-                data: freq,
-                borderColor: 'green',
-                fill: false
-              },
-              {
-                label: 'Lead Time (hrs)',
-                data: lead,
-                borderColor: 'blue',
-                fill: false
-              }
-            ]
+    window.addEventListener('DOMContentLoaded', () => {
+      fetch('dora_metrics.json')
+        .then(response => response.json())
+        .then(data => {
+          if (!Array.isArray(data)) {
+            throw new Error("Invalid format: Expected an array of metric objects.");
           }
+
+          const labels = data.map(entry => new Date(entry.timestamp).toLocaleDateString());
+          const freq = data.map(entry => entry.deployment_frequency);
+          const lead = data.map(entry => entry.average_lead_time_hours);
+
+          const ctx = document.getElementById('doraChart').getContext('2d');
+          new Chart(ctx, {
+            type: 'line',
+            data: {
+              labels: labels,
+              datasets: [
+                {
+                  label: 'Deployment Frequency',
+                  data: freq,
+                  borderColor: 'green',
+                  backgroundColor: 'rgba(0, 128, 0, 0.1)',
+                  tension: 0.3,
+                  fill: true
+                },
+                {
+                  label: 'Lead Time (hrs)',
+                  data: lead,
+                  borderColor: 'blue',
+                  backgroundColor: 'rgba(0, 0, 255, 0.1)',
+                  tension: 0.3,
+                  fill: true
+                }
+              ]
+            },
+            options: {
+              responsive: true,
+              plugins: {
+                title: {
+                  display: true,
+                  text: 'Historical DORA Metrics'
+                }
+              },
+              scales: {
+                y: {
+                  beginAtZero: true,
+                  title: {
+                    display: true,
+                    text: 'Value'
+                  }
+                },
+                x: {
+                  title: {
+                    display: true,
+                    text: 'Date'
+                  }
+                }
+              }
+            }
+          });
+        })
+        .catch(error => {
+          console.error("Failed to load metrics:", error);
+          document.body.innerHTML += "<p style='color:red;'>Failed to load metrics.</p>";
         });
-      })
-      .catch(error => {
-        console.error("Failed to load metrics:", error);
-        document.body.innerHTML += "<p style='color:red;'>Failed to load metrics.</p>";
-      });
+    });
   </script>
 </body>
 </html>
