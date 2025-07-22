@@ -1,13 +1,25 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>DORA Metrics Dashboard</title>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <title>DORA Metrics</title>
+  <style>
+    body { font-family: sans-serif; max-width: 600px; margin: 2rem auto; }
+    pre { background: #f4f4f4; padding: 1rem; border-radius: 5px; }
+  </style>
 </head>
 <body>
-  <h2>DORA Metrics</h2>
-  <canvas id="doraChart" width="600" height="300"></canvas>
+  <h1>DORA Metrics</h1>
+  <pre id="metrics">Loading...</pre>
 
-  <script src="script.js"></script>
+  <script>
+    fetch('dora_metrics.json')
+      .then(res => res.json())
+      .then(data => {
+        document.getElementById('metrics').textContent = JSON.stringify(data, null, 2);
+      })
+      .catch(err => {
+        document.getElementById('metrics').textContent = 'Failed to load metrics.';
+      });
+  </script>
 </body>
 </html>
