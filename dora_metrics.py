@@ -51,17 +51,34 @@ def calculate_lead_time(deployments):
             lead_times.append((deployed_time - merged_time).total_seconds() / 3600)
     return sum(lead_times) / len(lead_times) if lead_times else 0
 
-# --- Run ---
+# --- Collect new metrics ---
 deployments = get_deployments()
 frequency = calculate_frequency(deployments)
 lead_time = calculate_lead_time(deployments)
 
-result = {
+new_entry = {
+    "timestamp": datetime.utcnow().isoformat(),
     "deployment_frequency": frequency,
     "average_lead_time_hours": round(lead_time, 2)
 }
 
-with open("docs/dora_metrics.json", "w") as f:
-    json.dump(result, f, indent=2)
+# --- Load existing metrics and append ---
+file_path = "docs/dora_metrics.json"
+if os.path.exists(file_path):
+    try:
+        with open(file_path, "r") as f:
+            existing_data = json.load(f)
+            if not isinstance(existing_data, list):
+                existing_data = []
+    except json.JSONDecodeError:
+        existing_data = []
+else:
+    existing_data = []
 
-print("✅ DORA Metrics Saved:", result)
+existing_data.append(new_entry)
+
+# --- Save updated history ---
+with open(file_path, "w") as f:
+    json.dump(existing_data, f, indent=2)
+
+print("✅ DORA Metrics appended:", new_entry)
