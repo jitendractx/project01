@@ -1,14 +1,14 @@
-<canvas id="doraTrendChart" width="600" height="300"></canvas>
-
 <script>
   fetch('dora_metrics.json')
     .then(res => res.json())
     .then(data => {
-      const labels = data.map(item => new Date(item.timestamp).toLocaleDateString());
-      const deployFreq = data.map(item => item.deployment_frequency);
-      const leadTime = data.map(item => item.average_lead_time_hours);
+      if (!Array.isArray(data)) throw new Error("Invalid format: not array");
 
-      const ctx = document.getElementById('doraTrendChart').getContext('2d');
+      const labels = data.map(d => d.timestamp);
+      const freqData = data.map(d => d.deployment_frequency);
+      const leadData = data.map(d => d.average_lead_time_hours);
+
+      const ctx = document.getElementById('doraChart').getContext('2d');
       new Chart(ctx, {
         type: 'line',
         data: {
@@ -16,37 +16,30 @@
           datasets: [
             {
               label: 'Deployment Frequency',
-              data: deployFreq,
-              borderColor: 'green',
-              backgroundColor: 'rgba(0, 128, 0, 0.1)',
-              fill: true,
-              tension: 0.3
+              data: freqData,
+              borderColor: 'blue',
+              fill: false
             },
             {
               label: 'Lead Time (hrs)',
-              data: leadTime,
-              borderColor: 'blue',
-              backgroundColor: 'rgba(0, 0, 255, 0.1)',
-              fill: true,
-              tension: 0.3
+              data: leadData,
+              borderColor: 'green',
+              fill: false
             }
           ]
         },
         options: {
           responsive: true,
-          scales: {
-            y: {
-              beginAtZero: true,
-              title: { display: true, text: 'Value' }
-            },
-            x: {
-              title: { display: true, text: 'Date' }
+          plugins: {
+            title: {
+              display: true,
+              text: 'DORA Metrics Over Time'
             }
           }
         }
       });
     })
     .catch(err => {
-      document.body.innerHTML += '<p style="color:red;">Failed to load metrics: ' + err.message + '</p>';
+      document.getElementById('error').textContent = 'Failed to load metrics: ' + err.message;
     });
 </script>
