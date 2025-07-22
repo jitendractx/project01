@@ -22,7 +22,7 @@
 
   <script>
     window.addEventListener('DOMContentLoaded', () => {
-      fetch('dora_metrics.json')
+      fetch('docs/dora_metrics.json')
         .then(response => response.json())
         .then(data => {
           if (!Array.isArray(data)) {
