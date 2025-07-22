@@ -24,14 +24,13 @@ jobs:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
         run: python dora_metrics.py
 
-      - name: Commit metrics file
-        env:
-          GH_PAT: ${{ secrets.GH_PAT }}
+      - name: Commit and push DORA metrics
         run: |
           git config user.name "jitendractx"
           git config user.email "jitendractx@users.noreply.github.com"
-          git remote set-url origin https://jitendractx:${GH_PAT}@github.com/jitendractx/project01.git
+          git remote set-url origin https://x-access-token:${{ secrets.GH_PAT }}@github.com/jitendractx/project01.git
           git add dora_metrics.json
-          git commit -m "Update DORA metrics" || echo "No changes"
+          git commit -m "Update DORA metrics" || echo "No changes to commit"
           git push
+                
   
