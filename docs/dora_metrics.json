@@ -23,5 +23,10 @@
     "timestamp": "2025-08-11T01:26:12.162075",
     "deployment_frequency": 5,
     "average_lead_time_hours": 1.7
+  },
+  {
+    "timestamp": "2025-08-18T01:24:28.522685",
+    "deployment_frequency": 2,
+    "average_lead_time_hours": 18.26
   }
 ]
